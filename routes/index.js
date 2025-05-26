@@ -1,12 +1,14 @@
-const {
-  ERROR_CODE,
-  NOT_FOUND_CODE,
-  SERVER_ERROR_CODE,
-} = require("../utils/constants");
 const router = require("express").Router();
-const clothingItem = require("./clothingItem.js");
+
+const { NOT_FOUND_CODE } = require("../utils/constant");
+
+const userRoutes = require("./users");
+
+const clothingItem = require("./clothingItem");
+
 router.use("/items", clothingItem);
+router.use("/users", userRoutes);
 router.use((req, res) => {
-  res.status(SERVER_ERROR_CODE).send({ messgae: "Router not found" });
+  res.status(NOT_FOUND_CODE).send({ messgae: "Router not found" });
 });
 module.exports = router;
