@@ -1,0 +1,5 @@
+module.exports = {
+  ERROR_CODE: 400,
+  NOT_FOUND_CODE: 404,
+  SERVER_ERROR_CODE: 500,
+};
