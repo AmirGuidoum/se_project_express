@@ -22,7 +22,9 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(NOT_FOUND_CODE).send({ message: "Item not found" });
+        return res
+          .status(ERROR_CODE)
+          .send({ message: "Invalid user data provided" });
       }
       return res
         .status(SERVER_ERROR_CODE)

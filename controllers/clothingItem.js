@@ -6,8 +6,8 @@ const {
 const ClothingItem = require("../models/clothingItem");
 
 const createItem = (req, res) => {
-  const { name, weather, imageURL } = req.body;
-  ClothingItem.create({ name, weather, imageURL, owner: req.user._id })
+  const { name, weather, imageUrl } = req.body;
+  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
       res.send({ data: item });
     })
@@ -37,7 +37,7 @@ const deleteItem = (req, res) => {
 
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then(() => res.status(204).send({}))
+    .then(() => res.status(200).send({ message: "Item successfully deleted" }))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_CODE).send({ message: "Item not found" });
