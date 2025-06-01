@@ -2,9 +2,14 @@ const {
   ERROR_CODE,
   NOT_FOUND_CODE,
   SERVER_ERROR_CODE,
+  CONFLICT_CODE,
+  INVALID_CREDENTIAlS,
 } = require("../utils/constant");
 const User = require("../models/user");
-
+const { JWT_SECRET } = require("../utils/config");
+const jwt = require("jsonwebtoken");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
@@ -16,11 +21,38 @@ const getUsers = (req, res) => {
     });
 };
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
-  User.create({ name, avatar })
-    .then((users) => res.status(201).send(users))
+  const { name, avatar, email, password } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(ERROR_CODE)
+      .send({ message: "Email and password are required" });
+  }
+
+  if (!validator.isEmail(email)) {
+    return res.status(ERROR_CODE).send({ message: "Invalid email format" });
+  }
+
+  bcrypt
+    .hash(password, 10)
+    .then((hashedPassword) =>
+      User.create({ name, avatar, email, password: hashedPassword })
+    )
+    .then((user) =>
+      res.status(201).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+      })
+    )
     .catch((err) => {
       console.error(err);
+      if (err.code === 11000) {
+        return res
+          .status(CONFLICT_CODE)
+          .send({ message: "Email already in use" });
+      }
       if (err.name === "ValidationError") {
         return res
           .status(ERROR_CODE)
@@ -31,8 +63,8 @@ const createUser = (req, res) => {
         .send({ message: "An error has occurred on the server." });
     });
 };
-const getUser = (req, res) => {
-  const { userId } = req.params;
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
 
   User.findById(userId)
     .orFail()
@@ -41,14 +73,83 @@ const getUser = (req, res) => {
       if (err.name === "CastError") {
         return res
           .status(ERROR_CODE)
-          .send({ message: "Invalid item ID format" });
+          .send({ message: "Invalid user ID format" });
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_CODE).send({ message: "Item not found" });
+        return res.status(NOT_FOUND_CODE).send({ message: "User not found" });
       }
       return res
         .status(SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server." });
     });
 };
-module.exports = { getUsers, createUser, getUser };
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(ERROR_CODE)
+      .send({ message: "Email and password are required" });
+  }
+
+  User.findOne({ email })
+    .select("+password")
+    .then((user) => {
+      if (!user) {
+        throw new Error("Invalid credentials");
+      }
+      return bcrypt.compare(password, user.password).then((isMatch) => {
+        if (!isMatch) {
+          throw new Error("Invalid credentials");
+        }
+
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+          expiresIn: "7d",
+        });
+        res.send({ token });
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(INVALID_CREDENTIAlS)
+        .send({ message: "Invalid email or password" });
+    });
+};
+const updateUserProfile = (req, res) => {
+  const { name, avatar } = req.body;
+  const userId = req.user._id;
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    {
+      new: true,
+      runValidators: true,
+    }
+  )
+    .orFail()
+    .then((updatedUser) => res.status(200).send(updatedUser))
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return res
+          .status(ERROR_CODE)
+          .send({ message: "Invalid user data provided" });
+      }
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_CODE).send({ message: "User not found" });
+      }
+      console.error(err);
+      return res
+        .status(SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+module.exports = {
+  getUsers,
+  createUser,
+  getCurrentUser,
+  login,
+  updateUserProfile,
+};
