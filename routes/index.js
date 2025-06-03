@@ -1,4 +1,4 @@
-const router = require("express").Router();
+/*const router = require("express").Router();
 
 const { NOT_FOUND_CODE } = require("../utils/constant");
 
@@ -14,4 +14,4 @@ router.get("/users/me", getCurrentUser);
 router.use((req, res) => {
   res.status(NOT_FOUND_CODE).send({ messgae: "Router not found" });
 });
-module.exports = router;
+module.exports = router;*/

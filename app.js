@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-const { ERROR_CODE } = require("./utils/constant");
+const { NOT_FOUND_CODE } = require("./utils/constant");
 const {
   login,
   createUser,
@@ -22,15 +22,12 @@ mongoose
 app.use(express.json());
 app.post("/signin", login);
 app.post("/signup", createUser);
-// app.post("/signin", require("./routes/signin"));
-// app.post("/signup", require("./routes/signup"));
-// app.get("/items", require("./routes/items"));
+app.use("/items", clothingItemRouter);
 app.use(auth);
 app.get("/users/me", getCurrentUser);
 app.patch("/users/me", updateUserProfile);
-app.use("/items", clothingItemRouter);
 app.use((req, res) => {
-  res.status(ERROR_CODE).send({ message: "Not Found" });
+  res.status(NOT_FOUND_CODE).send({ message: "Not Found" });
 });
 
 app.listen(PORT, () => {});
