@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
-const { INVALID_CREDENTIAlS } = require("../utils/constant");
+const { INVALID_CREDENTIALS } = require("../utils/constant");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return res
-      .status(INVALID_CREDENTIAlS)
+      .status(INVALID_CREDENTIALS)
       .send({ message: "Authorization required" });
   }
 
@@ -16,10 +16,10 @@ const auth = (req, res, next) => {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = payload;
-    next();
+    return next();
   } catch (err) {
     return res
-      .status(INVALID_CREDENTIAlS)
+      .status(INVALID_CREDENTIALS)
       .send({ message: "Invalid or expired token" });
   }
 };

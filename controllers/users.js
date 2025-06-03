@@ -1,25 +1,16 @@
+const jwt = require("jsonwebtoken");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
 const {
   ERROR_CODE,
   NOT_FOUND_CODE,
   SERVER_ERROR_CODE,
   CONFLICT_CODE,
-  INVALID_CREDENTIAlS,
+  INVALID_CREDENTIALS,
 } = require("../utils/constant");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const jwt = require("jsonwebtoken");
-const validator = require("validator");
-const bcrypt = require("bcrypt");
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(200).send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(SERVER_ERROR_CODE)
-        .send({ message: "An error has occurred on the server." });
-    });
-};
+
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -58,10 +49,12 @@ const createUser = (req, res) => {
           .status(ERROR_CODE)
           .send({ message: "Invalid user data provided" });
       }
+
       return res
         .status(SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server." });
     });
+  return null;
 };
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
@@ -97,25 +90,33 @@ const login = (req, res) => {
     .select("+password")
     .then((user) => {
       if (!user) {
-        throw new Error("Invalid credentials");
+        return Promise.reject(new Error("Invalid credentials"));
       }
       return bcrypt.compare(password, user.password).then((isMatch) => {
         if (!isMatch) {
-          throw new Error("Invalid credentials");
+          return Promise.reject(new Error("Invalid credentials"));
         }
 
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
           expiresIn: "7d",
         });
-        res.send({ token });
+        return res.send({ token });
       });
     })
     .catch((err) => {
       console.error(err);
-      res
-        .status(INVALID_CREDENTIAlS)
-        .send({ message: "Invalid email or password" });
+
+      if (err.message === "Invalid credentials") {
+        return res
+          .status(INVALID_CREDENTIALS)
+          .send({ message: "Invalid email or password" });
+      }
+
+      return res
+        .status(SERVER_ERROR_CODE)
+        .send({ message: "An unexpected error occurred" });
     });
+  return null;
 };
 const updateUserProfile = (req, res) => {
   const { name, avatar } = req.body;
@@ -147,7 +148,6 @@ const updateUserProfile = (req, res) => {
     });
 };
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   login,
