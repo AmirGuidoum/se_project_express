@@ -92,6 +92,7 @@ const login = (req, res) => {
       if (!user) {
         return Promise.reject(new Error("Invalid credentials"));
       }
+
       return bcrypt.compare(password, user.password).then((isMatch) => {
         if (!isMatch) {
           return Promise.reject(new Error("Invalid credentials"));
@@ -100,7 +101,16 @@ const login = (req, res) => {
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
           expiresIn: "7d",
         });
-        return res.send({ token });
+
+        return res.send({
+          token,
+          user: {
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar,
+          },
+        });
       });
     })
     .catch((err) => {
@@ -116,6 +126,7 @@ const login = (req, res) => {
         .status(SERVER_ERROR_CODE)
         .send({ message: "An unexpected error occurred" });
     });
+
   return null;
 };
 const updateUserProfile = (req, res) => {
