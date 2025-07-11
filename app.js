@@ -49,11 +49,11 @@ app.get("/", (req, res) => {
 });
 app.post("/signin", loginValidation, login);
 app.post("/signup", registerValidation, createUser);
+app.use("/items", clothingItemRouter);
 
 app.use(auth);
 
 app.use("/users", userRoutes);
-app.use("/items", clothingItemRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl}`, NOT_FOUND_CODE));

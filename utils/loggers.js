@@ -18,7 +18,6 @@ const logger = createLogger({
   ],
 });
 
-// In development, log to the console too
 if (process.env.NODE_ENV !== "production") {
   logger.add(
     new transports.Console({
