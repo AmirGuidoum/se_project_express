@@ -12,7 +12,7 @@ const userRoutes = require("./routes/users");
 const clothingItemRouter = require("./routes/clothingItem");
 const errorHandler = require("./middleware/errorHandle");
 const AppError = require("./utils/AppError");
-const logger = require("./utils/loggers");
+//const logger = require("./utils/loggers");
 const { NOT_FOUND_CODE } = require("./utils/constant");
 const { login, createUser } = require("./controllers/users");
 const {
@@ -25,7 +25,7 @@ const { PORT = 3001 } = process.env;
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
-  .then(() => console.log("MongoDB connected"))
+  .then()
   .catch((err) => console.error("MongoDB connection error:", err));
 
 const logDirectory = path.join(__dirname, "logs");
@@ -44,7 +44,6 @@ app.use(
 app.use(cors());
 app.use(express.json());
 app.get("/", (req, res) => {
-  console.log(req.hostname);
   res.send("Hello from root route");
 });
 app.get("/crash-test", () => {
@@ -68,6 +67,4 @@ app.use(errors());
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, () => {});
