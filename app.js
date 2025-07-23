@@ -12,7 +12,6 @@ const userRoutes = require("./routes/users");
 const clothingItemRouter = require("./routes/clothingItem");
 const errorHandler = require("./middleware/errorHandle");
 const AppError = require("./utils/AppError");
-//const logger = require("./utils/loggers");
 const { NOT_FOUND_CODE } = require("./utils/constant");
 const { login, createUser } = require("./controllers/users");
 const {
