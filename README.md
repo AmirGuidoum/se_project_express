@@ -33,3 +33,11 @@ WTWR (What to Wear?) is a full-stack application designed to help users decide w
 - Centralized error handling to provide consistent API responses
 - Writing unit and integration tests to ensure server reliability
 - Preparing the application for deployment on cloud or remote servers
+
+## Backend API
+
+The backend API for the WTWR application is deployed at:
+
+**https://api.Amir49.crabdance.com**
+
+You can use this URL to send requests to the server endpoints, such as user authentication, item management, and more.
