@@ -47,6 +47,11 @@ app.get("/", (req, res) => {
   console.log(req.hostname);
   res.send("Hello from root route");
 });
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 app.post("/signin", loginValidation, login);
 app.post("/signup", registerValidation, createUser);
 app.use("/items", clothingItemRouter);
