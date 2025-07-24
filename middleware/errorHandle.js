@@ -1,21 +1,32 @@
-const logger = require("../utils/loggers");
+const AppError = require("../utils/AppError");
 
-const errorHandler = (err, req, res) => {
-  const statusCode = err.statusCode || 500;
-  const status = err.status || "error";
+class BadRequestError extends AppError {
+  constructor(message = "Bad Request") {
+    super(message, 400);
+  }
+}
 
-  logger.error({
-    message: err.message,
-    stack: err.stack,
-    statusCode,
-    path: req.originalUrl,
-    method: req.method,
-  });
+class NotFoundError extends AppError {
+  constructor(message = "Not Found") {
+    super(message, 404);
+  }
+}
 
-  res.status(statusCode).json({
-    status,
-    message: statusCode === 500 ? "Internal Server Error" : err.message,
-  });
+class ForbiddenError extends AppError {
+  constructor(message = "Forbidden") {
+    super(message, 403);
+  }
+}
+
+class ServerError extends AppError {
+  constructor(message = "Internal Server Error") {
+    super(message, 500);
+  }
+}
+
+module.exports = {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+  ServerError,
 };
-
-module.exports = errorHandler;
