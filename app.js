@@ -20,21 +20,7 @@ const {
 } = require("./middleware/validations/authValidation");
 
 const app = express();
-const portfinder = require("portfinder");
-
-const DEFAULT_PORT = process.env.PORT || 3001;
-
-portfinder
-  .getPortPromise({ port: DEFAULT_PORT })
-  .then((port) => {
-    app.listen(port, () => {
-      console.log(`✅ Server running on port ${port}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ Could not find an open port:", err);
-    process.exit(1);
-  });
+const { PORT = 3001 } = process.env;
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
@@ -79,3 +65,7 @@ app.all("*", (req, res, next) => {
 app.use(errors());
 
 app.use(errorHandler);
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
