@@ -28,6 +28,11 @@ class UnauthorizedError extends AppError {
     super(message, 401);
   }
 }
+class ConflictError extends AppError {
+  constructor(message = "Conflict") {
+    super(message, 409);
+  }
+}
 function errorHandler(err, req, res, next) {
   console.error(err);
 
@@ -43,5 +48,6 @@ module.exports = {
   ForbiddenError,
   ServerError,
   UnauthorizedError,
+  ConflictError,
   errorHandler,
 };
