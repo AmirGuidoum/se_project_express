@@ -20,7 +20,7 @@ const {
 } = require("./middleware/validations/authValidation");
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const { PORT = 3030 } = process.env;
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
@@ -66,6 +66,6 @@ app.use(errors());
 
 app.use(errorHandler);
 
-/*app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});*/
+});
