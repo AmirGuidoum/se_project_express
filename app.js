@@ -66,6 +66,17 @@ app.use(errors());
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `❌ Port ${PORT} is already in use. Please stop the other process or use a different port.`
+    );
+    process.exit(1); // stop the crash loop
+  } else {
+    throw err;
+  }
 });
