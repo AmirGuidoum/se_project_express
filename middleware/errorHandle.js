@@ -23,6 +23,11 @@ class ServerError extends AppError {
     super(message, 500);
   }
 }
+class UnauthorizedError extends AppError {
+  constructor(message = "Unauthorized") {
+    super(message, 401);
+  }
+}
 function errorHandler(err, req, res, next) {
   console.error(err);
 
@@ -37,5 +42,6 @@ module.exports = {
   NotFoundError,
   ForbiddenError,
   ServerError,
+  UnauthorizedError,
   errorHandler,
 };
