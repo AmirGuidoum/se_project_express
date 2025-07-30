@@ -3,11 +3,11 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const { BadRequestError } = require("../middleware/errors/BadRequestError");
-const { NotFoundError } = require("../middleware/errors/NotFoundError");
-const { ServerError } = require("../middleware/errors/ServerError");
-const { ConflictError } = require("../middleware/errors/ConflictError");
-const { UnauthorizedError } = require("../middleware/errors/UnauthorizedError");
+const BadRequestError = require("../middleware/errors/BadRequestError");
+const NotFoundError = require("../middleware/errors/NotFoundError");
+const ServerError = require("../middleware/errors/ServerError");
+const ConflictError = require("../middleware/errors/ConflictError");
+const UnauthorizedError = require("../middleware/errors/UnauthorizedError");
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;

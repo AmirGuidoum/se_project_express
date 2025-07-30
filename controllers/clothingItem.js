@@ -1,8 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
-const { BadRequestError } = require("../middleware/errors/BadRequestError");
-const { NotFoundError } = require("../middleware/errors/NotFoundError");
-const { ForbiddenError } = require("../middleware/errors/ForbiddenError");
-const { ServerError } = require("../middleware/errors/ServerError");
+const BadRequestError = require("../middleware/errors/BadRequestError");
+const NotFoundError = require("../middleware/errors/NotFoundError");
+const ForbiddenError = require("../middleware/errors/ForbiddenError");
+const ServerError = require("../middleware/errors/ServerError");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
