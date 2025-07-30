@@ -1,10 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BadRequestError,
-  NotFoundError,
-  ForbiddenError,
-  ServerError,
-} = require("../middleware/errorHandle");
+const { BadRequestError } = require("../middleware/errors/BadRequestError");
+const { NotFoundError } = require("../middleware/errors/NotFoundError");
+const { ForbiddenError } = require("../middleware/errors/ForbiddenError");
+const { ServerError } = require("../middleware/errors/ServerError");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -34,7 +32,9 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        throw new ForbiddenError("You are not allowed to delete this item");
+        return next(
+          new ForbiddenError("You are not allowed to delete this item")
+        );
       }
       return item
         .deleteOne()

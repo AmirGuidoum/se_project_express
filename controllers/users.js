@@ -3,13 +3,11 @@ const validator = require("validator");
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
-const {
-  BadRequestError,
-  ConflictError,
-  NotFoundError,
-  UnauthorizedError,
-  ServerError,
-} = require("../middleware/errorHandle");
+const { BadRequestError } = require("../middleware/errors/BadRequestError");
+const { NotFoundError } = require("../middleware/errors/NotFoundError");
+const { ServerError } = require("../middleware/errors/ServerError");
+const { ConflictError } = require("../middleware/errors/ConflictError");
+const { UnauthorizedError } = require("../middleware/errors/UnauthorizedError");
 
 const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
@@ -22,7 +20,7 @@ const createUser = (req, res, next) => {
     return next(new BadRequestError("Invalid email format"));
   }
 
-  bcrypt
+  return bcrypt
     .hash(password, 10)
     .then((hashedPassword) =>
       User.create({ name, avatar, email, password: hashedPassword })
@@ -68,7 +66,7 @@ const login = (req, res, next) => {
     return next(new BadRequestError("Email and password are required"));
   }
 
-  User.findOne({ email })
+  return User.findOne({ email })
     .select("+password")
     .then((user) => {
       if (!user) {
@@ -88,15 +86,7 @@ const login = (req, res, next) => {
           expiresIn: "7d",
         });
 
-        res.send({
-          token,
-          user: {
-            _id: user._id,
-            email: user.email,
-            name: user.name,
-            avatar: user.avatar,
-          },
-        });
+        return res.send({ token });
       });
     })
     .catch(next);
