@@ -20,10 +20,10 @@ const {
 } = require("./middleware/validations/authValidation");
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const { PORT = 3001, MONGO_URI } = process.env;
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/wtwr_db")
+  .connect(MONGO_URI || "mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
